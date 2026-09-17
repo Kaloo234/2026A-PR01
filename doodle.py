@@ -12,6 +12,7 @@ doodle_right_img = pygame.image.load(os.path.join(ASSETS_DIR, "doodle_right.png"
 doodle_right_img = pygame.transform.scale(doodle_right_img, DOODLE_SIZE)
 
 # ======================== PARTIE 1.1 ========================
+# Done
 # TODO : Remplacez les valeurs de "x" et "y" afin que le Doodle apparaisse
 # à sa position de départ.
 #
@@ -20,8 +21,8 @@ doodle_right_img = pygame.transform.scale(doodle_right_img, DOODLE_SIZE)
 
 # Initialisation du dictionnaire global du Doodle
 doodle_dict.update({
-    "x": 1000,
-    "y": 1000,
+    "x": DOODLE_START_X,
+    "y": DOODLE_START_Y,
     "vel_y": 0.0,
     "direction": "right",  # "left" ou "right"
     "score": 0,

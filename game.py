@@ -22,6 +22,8 @@ def apply_gravity():
     # TODO : Mettez à jour la vitesse verticale puis la position verticale
     # du Doodle à partir de GRAVITY.
 
+    
+
     return
 
 # ===========================================================
