@@ -54,10 +54,10 @@ def move_doodle():
     # N'utilisez pas de dimensions numériques écrites directement.
 
     # bord droit
-    if doodle_dict["x"] + DOODLE_WIDTH/2 > SCREEN_WIDTH:
-        doodle_dict["x"] = -DOODLE_WIDTH/2
-    if doodle_dict["x"] < -DOODLE_WIDTH/2:
-            doodle_dict["x"] = SCREEN_WIDTH - DOODLE_WIDTH/2
+    if doodle_dict["x"] + DOODLE_WIDTH//2 > SCREEN_WIDTH:
+        doodle_dict["x"] = -DOODLE_WIDTH//2
+    if doodle_dict["x"] < -DOODLE_WIDTH//2:
+            doodle_dict["x"] = SCREEN_WIDTH - DOODLE_WIDTH//2
 
     return
 
