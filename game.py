@@ -100,21 +100,40 @@ def check_platform_collisions():
     Le rebond ne se produit QUE lorsque le Doodle descend (vel_y > 0)
     et qu'il arrive sur le dessus d'une plateforme.
     """
-    if doodle_dict["vel_y"] > 0.0:
-        for plateforme in PLATFORMS:
-            rectDoodle = (doodle_dict["x"], doodle_dict["y"], DOODLE_WIDTH, DOODLE_HEIGHT)
-            rectPlatforme = (plateforme["x"], plateforme["y"], plateforme["width"], plateforme["height"])
-            positionPieds = doodle_dict["y"] - DOODLE_HEIGHT
-            if rects_collide(rectDoodle, rectPlatforme) and positionPieds < positionPieds + doodle_dict["vel_y"] + 14 and plateforme["active"] == True:
-                if plateforme["type"] == "spring":
-                    doodle_dict["vel_y"] = SPRING_JUMP_VELOCITY
+    # TODO : Implémentez la détection d'un atterrissage.
+    #
+    # Contraintes :
+    # - aucun rebond pendant la montée ;
+    # - ignorer les plateformes inactives ;
+    # - utiliser rects_collide(...) pour le chevauchement des rectangles ;
+    # - un simple chevauchement ne suffit pas : le Doodle doit arriver par
+    #   le dessus de la plateforme. Pour le vérifier, comparez la position
+    #   actuelle de ses pieds à leur position approximative à l'image
+    #   précédente à l'aide de vel_y. Une tolérance de 14 pixels est permise ;
+    # - spring : SPRING_JUMP_VELOCITY ;
+    # - brown : JUMP_VELOCITY puis désactivation de la plateforme ;
+    # - green/blue : JUMP_VELOCITY.
+
+    if doodle_dict["vel_y"] > 0:
+        for platform in PLATFORMS:
+            if (platform["active"] and 
+                rects_collide((doodle_dict["x"], doodle_dict["y"], DOODLE_WIDTH, DOODLE_HEIGHT),
+                                (platform["x"], platform["y"], platform["width"], platform["height"]))):
+
+                ##TODO reste à vérifier qu'il arrive par le haut
+                if not rects_collide((doodle_dict["x"], doodle_dict["y"] - doodle_dict["vel_y"], DOODLE_WIDTH, DOODLE_HEIGHT),
+                                        (platform["x"], platform["y"], platform["width"], platform["height"])):
+
+                    if platform["type"] == "blue" or platform["type"] == "green":
+                        doodle_dict["vel_y"] = JUMP_VELOCITY
+                    elif platform["type"] == "spring":
+                        doodle_dict["vel_y"] = SPRING_JUMP_VELOCITY
+                    elif platform["type"] == "brown":
+                        doodle_dict["vel_y"] = JUMP_VELOCITY
+                        platform["active"] = False
+
                     return
-                else:
-                    doodle_dict["vel_y"] = JUMP_VELOCITY
-                    if (plateforme["type"] == "brown"):
-                        plateforme["active"] = False
-                        PLATFORMS.remove(plateforme)
-                    return
+
     return
 
 # ===========================================================
