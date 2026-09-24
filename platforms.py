@@ -31,10 +31,6 @@ platform_images = {
 def create_platform(x, y, platform_type="green"):
     """
     Crée et retourne un dictionnaire représentant une plateforme.
-
-    Le dictionnaire ci-dessous représente pour l'instant correctement une
-    plateforme verte. Votre travail consiste à le généraliser afin qu'il
-    représente aussi correctement les plateformes bleues, marron et à ressort.
     """
 
     platform = {

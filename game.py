@@ -100,20 +100,21 @@ def check_platform_collisions():
     Le rebond ne se produit QUE lorsque le Doodle descend (vel_y > 0)
     et qu'il arrive sur le dessus d'une plateforme.
     """
-    # TODO : Implémentez la détection d'un atterrissage.
-    #
-    # Contraintes :
-    # - aucun rebond pendant la montée ;
-    # - ignorer les plateformes inactives ;
-    # - utiliser rects_collide(...) pour le chevauchement des rectangles ;
-    # - un simple chevauchement ne suffit pas : le Doodle doit arriver par
-    #   le dessus de la plateforme. Pour le vérifier, comparez la position
-    #   actuelle de ses pieds à leur position approximative à l'image
-    #   précédente à l'aide de vel_y. Une tolérance de 14 pixels est permise ;
-    # - spring : SPRING_JUMP_VELOCITY ;
-    # - brown : JUMP_VELOCITY puis désactivation de la plateforme ;
-    # - green/blue : JUMP_VELOCITY.
-
+    if doodle_dict["vel_y"] > 0.0:
+        for plateforme in PLATFORMS:
+            rectDoodle = (doodle_dict["x"], doodle_dict["y"], DOODLE_WIDTH, DOODLE_HEIGHT)
+            rectPlatforme = (plateforme["x"], plateforme["y"], plateforme["width"], plateforme["height"])
+            positionPieds = doodle_dict["y"] - DOODLE_HEIGHT
+            if rects_collide(rectDoodle, rectPlatforme) and positionPieds < positionPieds + doodle_dict["vel_y"] + 14 and plateforme["active"] == True:
+                if plateforme["type"] == "spring":
+                    doodle_dict["vel_y"] = SPRING_JUMP_VELOCITY
+                    return
+                else:
+                    doodle_dict["vel_y"] = JUMP_VELOCITY
+                    if (plateforme["type"] == "brown"):
+                        plateforme["active"] = False
+                        PLATFORMS.remove(plateforme)
+                    return
     return
 
 # ===========================================================
@@ -132,7 +133,21 @@ def scroll_camera():
     # Le score doit représenter la distance verticale ainsi parcourue et le
     # meilleur score doit être mis à jour. Les plateformes sorties sous
     # l'écran doivent être retirées, puis de nouvelles plateformes générées.
-
+    if doodle_dict["y"] < CAMERA_SCROLL_THRESHOLD:
+        # Bouge le doodle
+        diff = CAMERA_SCROLL_THRESHOLD - doodle_dict["y"]
+        doodle_dict["y"] += diff
+        # Update le score
+        doodle_dict["score"] += diff
+        if doodle_dict["score"] > doodle_dict["high_score"]:
+            doodle_dict["high_score"] = doodle_dict["score"]
+        # Bouge le splateformes et élimine celles qui sont au bas de l'écran
+        for plateforme in PLATFORMS:
+            plateforme["y"] += diff
+            if plateforme["y"] > SCREEN_HEIGHT:
+                PLATFORMS.remove(plateforme)
+        # Génère les nouvelles plateformes
+        generate_new_platforms()
     return
 
 # ===========================================================
@@ -150,6 +165,23 @@ def generate_new_platforms():
     # Vous devrez partir de la plateforme actuellement la plus haute et
     # continuer à ajouter des plateformes tant que nécessaire. Utilisez
     # choose_platform_type(...) avec les probabilités indiquées dans le README.
+
+    if len(PLATFORMS) > 0:
+        current_y = PLATFORMS[len(PLATFORMS)-1]["y"] - random.randint(MIN_PLATFORM_GAP, MAX_PLATFORM_GAP)
+    else:
+        current_y = SCREEN_HEIGHT - random.randint(MIN_PLATFORM_GAP, MAX_PLATFORM_GAP)
+    
+    while current_y > 0:
+        new_platform_type = choose_platform_type(0.55, 0.20, 0.13)
+        new_x = random.randint(0, SCREEN_WIDTH - PLATFORM_WIDTH)
+        new_platform = create_platform(
+            new_x,
+            current_y,
+            new_platform_type
+        )
+        PLATFORMS.append(new_platform)
+
+        current_y -= random.randint(MIN_PLATFORM_GAP, MAX_PLATFORM_GAP)
 
     return
 
